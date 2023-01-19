@@ -3,14 +3,15 @@ import MemberCtrl from '@/controllers/member.ctrl';
 import handleError from '@/controllers/error/handle_error';
 import checkSupportMethod from '@/controllers/error/check_support_method';
 
-// 자주 쓰게 될 예정. 잘 봐라.
-// POST만 할 예정
+// members.add.ts 복사했음.
+// 정보를 꺼내오는 역할
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { method } = req;
-  const supportMethod = ['POST'];
+  const supportMethod = ['GET'];
   try {
     checkSupportMethod(supportMethod, method);
-    await MemberCtrl.add(req, res);
+    await MemberCtrl.findByScreenName(req, res);
   } catch (err) {
     console.error(err);
     //에러 처리
