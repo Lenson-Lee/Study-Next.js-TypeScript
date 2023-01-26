@@ -3,7 +3,7 @@ import handleError from '@/controllers/error/handle_error';
 import checkSupportMethod from '@/controllers/error/check_support_method';
 import MessageCtrl from '@/controllers/message.ctrl';
 
-// 자주 쓰게 될 예정. 잘 봐라.
+// members.add.ts 복북
 // POST만 할 예정
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { method } = req;
