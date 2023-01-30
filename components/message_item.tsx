@@ -1,4 +1,4 @@
-import { Avatar, Box, Button, Divider, Flex, Text, Textarea, VStack } from '@chakra-ui/react';
+import { Avatar, Box, Button, Divider, Flex, Text, Textarea } from '@chakra-ui/react';
 import { InMessage } from '@/models/message/in_message';
 import convertDateToString from '@/utils/convert_date_to_string';
 import ResizeTextarea from 'react-textarea-autosize';
