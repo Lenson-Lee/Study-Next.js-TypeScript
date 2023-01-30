@@ -2,6 +2,7 @@ import { Avatar, Box, Button, Divider, Flex, Text, Textarea } from '@chakra-ui/r
 import { InMessage } from '@/models/message/in_message';
 import convertDateToString from '@/utils/convert_date_to_string';
 import ResizeTextarea from 'react-textarea-autosize';
+import { useState } from 'react';
 
 interface Props {
   uid: string;
@@ -9,8 +10,27 @@ interface Props {
   photoURL: string;
   isOwner: boolean;
   item: InMessage;
+  onSendComplete: () => void;
 }
-const MessageItem = function ({ displayName, photoURL, item, isOwner }: Props) {
+const MessageItem = function ({ uid, displayName, photoURL, item, isOwner, onSendComplete }: Props) {
+  const [reply, setReply] = useState('');
+  async function postReply() {
+    const resp = await fetch('/api/messages.add.reply', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        uid,
+        messageId: item.id,
+        reply,
+      }),
+    });
+    //제대로 전송되었을때(200번대)
+    if (resp.status < 300) {
+      onSendComplete();
+    }
+    // console.info(resp.status);
+  }
+
   const haveReply = item.reply !== undefined;
   return (
     <Box borderRadius="md" width="full" bg="white" boxShadow="md">
@@ -71,9 +91,22 @@ const MessageItem = function ({ displayName, photoURL, item, isOwner }: Props) {
                   fontSize="xs"
                   placeholder="댓글을 입력하세요"
                   as={ResizeTextarea}
+                  value={reply}
+                  onChange={(e) => {
+                    setReply(e.currentTarget.value);
+                  }}
                 />
               </Box>
-              <Button colorScheme="pink" bgColor="#FF75B5" variant="solid" size="sm">
+              <Button
+                disabled={reply.length === 0}
+                colorScheme="pink"
+                bgColor="#FF75B5"
+                variant="solid"
+                size="sm"
+                onClick={() => {
+                  postReply();
+                }}
+              >
                 등록
               </Button>
             </Box>{' '}

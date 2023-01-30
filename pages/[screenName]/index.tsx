@@ -76,6 +76,7 @@ const UserHomePage: NextPage<Props> = function ({ userInfo }) {
   const [message, setMessage] = useState('');
   const [isAnonymous, setAnonymous] = useState(true);
   const [messageList, setMessageList] = useState<InMessage[]>([]);
+  const [messageListFetchTrigger, setMessageListFetchTrigger] = useState(false);
   const toast = useToast();
   const { authUser } = UseAuth();
 
@@ -93,12 +94,34 @@ const UserHomePage: NextPage<Props> = function ({ userInfo }) {
       console.error(err);
     }
   }
+
+  async function fetchMessageInfo({ uid, messageId }: { uid: string; messageId: string }) {
+    try {
+      const resp = await fetch(`/api/messages.info?uid=${uid}&messageId=${messageId}`);
+      if (resp.status === 200) {
+        const data: InMessage = await resp.json();
+        setMessageList((prev) => {
+          /** 등록하려는 댓글 하나만 뽑아서 넘어온 값이기 때문에 messageList 에서 동일한 id값을 찾는다. */
+          const findIndex = prev.findIndex((fv) => fv.id === data.id);
+          if (findIndex >= 0) {
+            //findIndex는 찾는 값이 없을 때 -1 반환 : 0 이상이면 값이 있다는 뜻
+            const updateArr = [...prev];
+            updateArr[findIndex] = data;
+            return updateArr;
+          }
+          return prev;
+        });
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }
   useEffect(() => {
     if (userInfo === null) {
       return;
     }
     fetchMessageList(userInfo.uid);
-  }, [userInfo]);
+  }, [userInfo, messageListFetchTrigger]);
 
   //
   if (userInfo === null) {
@@ -178,6 +201,7 @@ const UserHomePage: NextPage<Props> = function ({ userInfo }) {
                   toast({ title: '메시지 등록 실패', position: 'top-right' });
                 }
                 setMessage('');
+                setMessageListFetchTrigger((prev) => !prev);
               }}
             >
               등록
@@ -213,6 +237,10 @@ const UserHomePage: NextPage<Props> = function ({ userInfo }) {
                 displayName={userInfo.displayName ?? ''}
                 photoURL={userInfo.photoURL ?? 'https://bit.ly/broken-link'}
                 isOwner={isOwner}
+                onSendComplete={() => {
+                  // setMessageListFetchTrigger((prev) => !prev);
+                  fetchMessageInfo({ uid: userInfo.uid, messageId: msgData.id });
+                }}
               />
             );
           })}
