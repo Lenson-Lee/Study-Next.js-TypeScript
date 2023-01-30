@@ -178,8 +178,30 @@ const UserHomePage: NextPage<Props> = function ({ userInfo }) {
           </FormControl>
         </Box>
         <VStack spacing="12px" mt="6">
-          <MessageItem />
-          <MessageItem />
+          <MessageItem
+            uid=""
+            displayName="test"
+            photoURL={authUser?.photoURL ?? ''}
+            isOwner={false}
+            item={{
+              id: 'test',
+              message: 'test_asdf',
+              createAt: '2022-01-30T20:15:55+09:00',
+              reply: 'reply',
+              replyAt: '2022-04-15T20:15:55+09:00',
+            }}
+          />
+          <MessageItem
+            uid=""
+            displayName="test"
+            photoURL={authUser?.photoURL ?? ''}
+            isOwner={true}
+            item={{
+              id: 'test',
+              message: 'test_asdf',
+              createAt: '2022-02-30T20:15:55+09:00',
+            }}
+          />
         </VStack>
       </Box>
     </ServiceLayout>
